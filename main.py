@@ -70,9 +70,9 @@ def new_post():
 @app.route('/blog')
 def entries():
     entry_id = request.args.get("id")
-    blogs = Blog.query.all()
 
     if entry_id == None:
+        blogs = Blog.query.order_by(Blog.pub_date.desc()).all()
         return render_template('blog.html',title='Build-A-Blog',blogs=blogs)
     else:
         blog = Blog.query.filter_by(id=entry_id).one()
