@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Build-A-Blog</h1>
+<!--Add Blog Entry-->
+<h2>Add a Blog Entry</h2>
+<form action="/newpost" method="POST">
+    <label>
+        Title: 
+        <input type="text" name="blog_title" value="{{blog_title}}" />
+        <p class="error-msg">{{title_error}}</p>
+    </label>
+    <label>
+        Tell me about it:
+        <textarea rows = "15" cols="60 "name="blog_body">{{blog_body}}</textarea>
+        <p class="error-msg">{{body_error}}</p>
+    </label>
+    <input class="btn-submit" type="submit" value="Add Entry" />
+</form>
+<!--List Blog Entries-
+<hr>
+{% if blogs|length == 0 %}
+<p>No blogs yet.</p>
+{% else %}
+<h2>Entries</h2>
+<ul>
+    {% for blog in blogs %}
+    <li>
+        <a href="./blog?id={{blog.id}}">{{blog.title}}</a>
+        <p>{{blog.body}}</p>
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}-->
+{% endblock %}

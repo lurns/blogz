@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{title}}</title>
+        <style type="text/css">
+            body {
+                font-family: Helvetica, sans-serif;
+            }
+
+            .error-msg {
+                color: red;
+                font-size: .8em;
+            }
+
+            input, textarea {
+                display: block;
+                resize: none;
+            }
+
+            label {
+                font-weight: bold;
+            }
+
+            nav a, nav a:visited {
+                color:#0059ff;
+                text-decoration: none;
+            }
+
+            ul li a, ul li a:visited {
+                font-size: 1.5em;
+                font-weight: bold;
+                color: #0059ff;
+                text-decoration: none;
+            }
+
+            ul {
+                list-style-type: none;
+            }
+
+            .btn-submit {
+                background-color: #0059ff;
+                border-radius: 15px;
+                font-size: 1em;
+                color: #fff;
+                padding: 10px 35px;
+            }
+
+        </style>
+    </head>
+    <body>
+    <header>
+        <nav>
+            <a href="/blog">Main Blog Page</a> &emsp; | &emsp;
+            <a href="/newpost">Add a Blog Entry</a>
+        </nav>
+    </header>
+    {% block content %}
+    {% endblock %}
+    </body>
+    <footer>
+
+    </footer>
+</html>
