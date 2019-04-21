@@ -1,10 +1,10 @@
-from flask import Flask, request, redirect, render_template
+from flask import Flask, request, redirect, render_template, flash, session
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://build-a-blog:root@localhost:8889/build-a-blog'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:root@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
@@ -15,14 +15,26 @@ class Blog(db.Model):
     title = db.Column(db.String(120))
     body = db.Column(db.String(900))
     pub_date = db.Column(db.DateTime())
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, body, pub_date=None):
+    def __init__(self, title, body, owner, pub_date=None):
         self.title = title
         self.body = body
+        self.owner = owner
         if pub_date is None:
             pub_date = datetime.utcnow()
         self.pub_date = pub_date
 
+class User(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True)
+    password = db.Column(db.String(50))
+    blogs = db.relationship('Blog', backref='owner')
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
 
 #workers
 def is_empty(val):
@@ -34,6 +46,61 @@ def is_empty(val):
 @app.route('/')
 def index():
     return redirect('/blog')
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    else:
+        username = request.form['username']
+        password = request.form['password']
+
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.password == password:
+            session['user'] = username
+            flash('Welcome back ' + username)
+            return redirect('/newpost')
+        else:
+            flash('Invalid username or password.')
+            return redirect('/login')
+
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+    if request.method == 'GET':
+        return render_template('signup.html')
+    else:
+        username = request.form['username']
+        password = request.form['password']
+        verify = request.form['verify']
+
+        existing_user = User.query.filter_by(username=username).first()
+
+        if not existing_user:
+            #Validate signup input
+            if username == '' or password == '':
+                flash('Please enter a valid username and password')
+                return render_template('signup.html', username=username)
+            elif len(username) < 3:
+                flash('Username must be 3 or more characters')
+                return redirect('/signup')
+            elif len(password) < 3:
+                flash('Password must be 3 or more characters')
+                return redirect('/signup')
+            #Finish validation! Create a user! Woooo
+            if password == verify:
+                new_user = User(username, password)
+                db.session.add(new_user)
+                db.session.commit()
+                session['username'] = username
+                return redirect('/newpost')
+            else:
+                flash('Please make sure passwords match.')
+                return render_template('signup.html', username=username)
+        else:
+            flash('Duplicate user.')
+            return redirect('/signup')
+        
 
 @app.route('/newpost', methods=['POST', 'GET'])
 def new_post():
