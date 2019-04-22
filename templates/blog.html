@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Build-A-Blog</h1>
+<h1>Blogz</h1>
 <!--List Blog Entries-->
 {% if blogs|length == 0 %}
 <p>No blogs yet.</p>
@@ -11,7 +11,7 @@
     <li>
         <a href="./blog?id={{blog.id}}">{{blog.title}}</a>
         <p>{{blog.body}}</p>
-        <p class="date">{{blog.pub_date}}</p>
+        <p class="date">{{blog.pub_date}} &emsp; &#9786; &emsp; written by <a href="/user?id={{blog.owner_id}}">{{blog.owner_id}}</a></p>
     </li>
     {% endfor %}
 </ul>

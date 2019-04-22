@@ -7,6 +7,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:root@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+app.secret_key = 'reallygoodstring'
 
 
 class Blog(db.Model):
@@ -17,10 +18,10 @@ class Blog(db.Model):
     pub_date = db.Column(db.DateTime())
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, body, owner, pub_date=None):
+    def __init__(self, title, body, owner_id, pub_date=None):
         self.title = title
         self.body = body
-        self.owner = owner
+        self.owner_id = owner_id
         if pub_date is None:
             pub_date = datetime.utcnow()
         self.pub_date = pub_date
@@ -43,9 +44,17 @@ def is_empty(val):
     else:
         return False
 
+accepted_routes = ['login', 'entries', 'signup', 'index']
+
+@app.before_request
+def require_login():
+    if not ('username' in session or request.endpoint in accepted_routes):
+        return redirect('/login')
+
 @app.route('/')
 def index():
-    return redirect('/blog')
+    users = User.query.all()
+    return render_template('index.html', users=users)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -58,7 +67,7 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user and user.password == password:
-            session['user'] = username
+            session['username'] = username
             flash('Welcome back ' + username)
             return redirect('/newpost')
         else:
@@ -120,7 +129,13 @@ def new_post():
             body_error = 'Please enter some words for your blog entry'
 
         if not title_error and not body_error:
-            new_blog = Blog(blog_title, blog_body)
+            if 'username' in session:
+                blog_owner  = str(session['username'])
+                blog_user = User.query.filter_by(username=blog_owner).one()
+                blog_owner_id = int(blog_user.id)
+
+
+            new_blog = Blog(blog_title, blog_body, blog_owner_id)
             db.session.add(new_blog)
             db.session.commit()
 
@@ -128,11 +143,16 @@ def new_post():
             return redirect(link)
         
         else:
-            return render_template('newpost.html',title='Build-A-Blog',
+            return render_template('newpost.html',title='Blogz',
             blogs=blogs,title_error=title_error,body_error=body_error,
             blog_title=blog_title,blog_body=blog_body)
     else:
-        return render_template('newpost.html',title='Build-A-Blog',blogs=blogs)
+        return render_template('newpost.html',title='Blogz',blogs=blogs)
+
+@app.route('/logout')
+def logout():
+    del session['username']
+    return redirect('/')
 
 @app.route('/blog')
 def entries():
@@ -140,7 +160,7 @@ def entries():
 
     if entry_id == None:
         blogs = Blog.query.order_by(Blog.pub_date.desc()).all()
-        return render_template('blog.html',title='Build-A-Blog',blogs=blogs)
+        return render_template('blog.html',title='Blogz',blogs=blogs)
     else:
         blog = Blog.query.filter_by(id=entry_id).one()
         return render_template('entry.html',blog=blog, title=blog.title)

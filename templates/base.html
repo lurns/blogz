@@ -67,15 +67,32 @@
                 margin-bottom: 0;
             }
 
+            .date a {
+                font-size: .8em;
+            }
+
         </style>
     </head>
     <body>
     <header>
         <nav>
-            <a href="/blog">Main Blog Page</a> &emsp; | &emsp;
-            <a href="/newpost">Add a Blog Entry</a>
+            <a href="/">Home</a> &emsp; | &emsp;
+            <a href="/blog">Blogs?</a> &emsp; | &emsp;
+            <a href="/newpost">Add a Blog Entry</a> &emsp; | &emsp;
+            <a href="/login">Login</a> &emsp; | &emsp;
+            <a href="/logout">Logout</a>
         </nav>
     </header>
+    {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                    <li class="error">{{message}}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+    {% endwith %}
+    
     {% block content %}
     {% endblock %}
     </body>
