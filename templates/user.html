@@ -2,16 +2,16 @@
 {% block content %}
 <h1>Blogz</h1>
 <!--List Blog Entries-->
-{% if blogs|length == 0 %}
+{% if user_blogs|length == 0 %}
 <p>No blogs yet.</p>
 {% else %}
-<h2>Entries</h2>
+<h2>{{user.username}} Entries</h2>
 <ul>
-    {% for blog in blogs %}
+    {% for blog in user_blogs %}
     <li>
         <a href="./blog?id={{blog.id}}">{{blog.title}}</a>
         <p>{{blog.body}}</p>
-        <p class="date">{{blog.pub_date}} &emsp; &#9786; &emsp; written by <a href="/blog?user={{blog.owner_id}}">{{blog.owner_id}}</a></p>
+        <p class="date">{{blog.pub_date}} &emsp; &#9786; &emsp; written by <a href="/blog?user={{blog.owner_id}}">{{user.username}}</a></p>
     </li>
     {% endfor %}
 </ul>

@@ -157,13 +157,20 @@ def logout():
 @app.route('/blog')
 def entries():
     entry_id = request.args.get("id")
+    user_id = request.args.get("user")
 
-    if entry_id == None:
-        blogs = Blog.query.order_by(Blog.pub_date.desc()).all()
-        return render_template('blog.html',title='Blogz',blogs=blogs)
-    else:
+    blogs = Blog.query.order_by(Blog.pub_date.desc()).all()
+    users = User.query.all()
+
+    if entry_id == None and user_id == None:
+        return render_template('blog.html',title='Blogz',blogs=blogs, users=users)
+    elif entry_id:
         blog = Blog.query.filter_by(id=entry_id).one()
         return render_template('entry.html',blog=blog, title=blog.title)
+    elif user_id:
+        user = User.query.filter_by(id=user_id).one()
+        user_blogs = Blog.query.filter_by(owner_id=user_id).order_by(Blog.pub_date.desc()).all()
+        return render_template('user.html', user=user, user_blogs=user_blogs)
 
 if __name__ == '__main__':
     app.run()
