@@ -84,8 +84,12 @@
             <a href="/">Home</a> &emsp; | &emsp;
             <a href="/blog">Blogs</a> &emsp; | &emsp;
             <a href="/newpost">Add a Blog Entry</a> &emsp; | &emsp;
-            <a href="/login">Login</a> &emsp; | &emsp;
+            {% if session['username'] %}
+            <span>{{session['username']}} is in the matrix &emsp; | &emsp; </span>
             <a href="/logout">Logout</a>
+            {% else %}
+            <a href="/login">Login</a>
+            {% endif %}
         </nav>
     </header>
     {% with messages = get_flashed_messages() %}
