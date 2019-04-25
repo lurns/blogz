@@ -8,9 +8,24 @@
                 margin: 0 20% 30px 20%;
             }
 
-            .error-msg {
-                color: red;
-                font-size: .8em;
+            .error {
+                background-color: rgb(245, 178, 178);
+                color: rgb(107, 33, 33);
+                font-weight: bold;
+                font-size: .9em;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                padding: 10px;
+            }
+
+            .success {
+                background-color: #adffdd;
+                color: #286149;
+                font-weight: bold;
+                font-size: .9em;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                padding: 10px;
             }
 
             input, textarea {
@@ -92,11 +107,11 @@
             {% endif %}
         </nav>
     </header>
-    {% with messages = get_flashed_messages() %}
+    {% with messages = get_flashed_messages(with_categories=True) %}
             {% if messages %}
                 <ul>
-                    {% for message in messages %}
-                    <li class="error">{{message}}</li>
+                    {% for category,message in messages %}
+                    <li class="{{category}}">{{message}}</li>
                     {% endfor %}
                 </ul>
             {% endif %}

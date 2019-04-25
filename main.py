@@ -68,10 +68,10 @@ def login():
 
         if user and user.password == password:
             session['username'] = username
-            flash('Welcome back ' + username)
+            flash('Welcome back ' + username,'success')
             return redirect('/newpost')
         else:
-            flash('Invalid username or password.')
+            flash('Invalid username or password.','error')
             return redirect('/login')
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -88,13 +88,13 @@ def signup():
         if not existing_user:
             #Validate signup input
             if username == '' or password == '':
-                flash('Please enter a valid username and password')
+                flash('Please enter a valid username and password','error')
                 return render_template('signup.html', username=username)
             elif len(username) < 3:
-                flash('Username must be 3 or more characters')
+                flash('Username must be 3 or more characters','error')
                 return redirect('/signup')
             elif len(password) < 3:
-                flash('Password must be 3 or more characters')
+                flash('Password must be 3 or more characters','error')
                 return redirect('/signup')
             #Finish validation! Create a user! Woooo
             if password == verify:
@@ -104,10 +104,10 @@ def signup():
                 session['username'] = username
                 return redirect('/newpost')
             else:
-                flash('Please make sure passwords match.')
+                flash('Please make sure passwords match.','error')
                 return render_template('signup.html', username=username)
         else:
-            flash('Duplicate user.')
+            flash('Duplicate user.','error')
             return redirect('/signup')
         
 
@@ -120,15 +120,12 @@ def new_post():
         blog_title = request.form['blog_title']
         blog_body = request.form['blog_body']
 
-        title_error = ''
-        body_error = ''
-
         if is_empty(blog_title):
-            title_error = 'Please enter a title for your blog entry'
+            flash('Please enter a title for your blog entry','error')
         if is_empty(blog_body):
-            body_error = 'Please enter some words for your blog entry'
+            flash('Please enter some words for your blog entry','error')
 
-        if not title_error and not body_error:
+        if not is_empty(blog_title) and not is_empty(blog_body):
             if 'username' in session:
                 blog_owner  = str(session['username'])
                 blog_user = User.query.filter_by(username=blog_owner).one()
@@ -144,8 +141,7 @@ def new_post():
         
         else:
             return render_template('newpost.html',title='Blogz',
-            blogs=blogs,title_error=title_error,body_error=body_error,
-            blog_title=blog_title,blog_body=blog_body)
+            blogs=blogs,blog_title=blog_title,blog_body=blog_body)
     else:
         return render_template('newpost.html',title='Blogz',blogs=blogs)
 

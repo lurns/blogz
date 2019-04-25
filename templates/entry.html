@@ -3,6 +3,6 @@
 
 <h2>{{blog.title}}</h2>
 <p>{{blog.body}}</p>
-<p class="date">{{blog.pub_date}} &emsp; &#9786; &emsp; written by <a href="/blog?user={{blog.owner_id}}">{{blog.owner_id}}</a></p>
+<p class="date">{{blog.pub_date}} &emsp; &#9786; &emsp; written by <a href="/blog?user={{blog.owner_id}}">{{blog.owner.username}}</a></p>
 
 {% endblock %}
